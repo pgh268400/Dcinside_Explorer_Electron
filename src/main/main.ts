@@ -1,22 +1,14 @@
 // 일렉트론 백그라운드 프로세스 (핵심 메인 프로세스)
 "use strict";
 
-import {
-  app,
-  protocol,
-  BrowserWindow,
-  ipcMain,
-  shell,
-  clipboard,
-  session,
-} from "electron";
+import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import path from "path";
 import { register_database_handlers } from "./ipc/database";
 import { register_filesystem_handlers } from "./ipc/filesystem";
 import { register_dcinside_handlers } from "./ipc/dcinside";
 import { register_window_handlers } from "./ipc/window";
-import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import installExtension from "electron-devtools-installer";
 
 // 개발 모드 / 배포 모드 검사용 변수
 const is_development = process.env.NODE_ENV !== "production";

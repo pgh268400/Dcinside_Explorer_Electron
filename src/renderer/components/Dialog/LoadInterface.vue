@@ -59,7 +59,22 @@ import { Nullable } from "@/types/default";
 import { SaveArticleData } from "@/types/view";
 import { defineComponent } from "vue";
 import SaveAllList from "./SaveList.vue";
-export default defineComponent({
+import { ipcRenderer } from "electron";
+import Vue from "vue";
+import { IPCChannel } from "../../../types/ipc";
+
+// Mode와 LoadMode는 IPC 통신을 통해 가져옵니다
+const Mode = {
+  AUTO: "auto",
+  MANUAL: "manual",
+} as const;
+
+const LoadMode = {
+  ...Mode,
+  ALL: "all" as const,
+} as const;
+
+export default Vue.extend({
   props: {
     is_open_dialog: Boolean,
     color: String,
@@ -75,8 +90,8 @@ export default defineComponent({
   data() {
     return {
       save_type: {
-        auto: "자동",
-        manual: "수동",
+        auto: Mode.AUTO,
+        manual: Mode.MANUAL,
       },
       selected_auto_save_data: null as Nullable<SaveArticleData>,
       is_open_save_data: false,

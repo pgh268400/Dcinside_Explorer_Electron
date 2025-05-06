@@ -6,6 +6,8 @@ import {
   get_full_logs,
   load_search_logs,
   Mode,
+  LoadMode,
+  LoadModeType,
 } from "../modules/lmdb";
 
 // DB 관련 IPC 핸들러 등록 함수
@@ -45,11 +47,11 @@ export function register_database_handlers() {
   // 검색 로그 조회 핸들러
   ipcMain.handle(
     IPCChannel.DB.LOAD_ARTICLE_SEARCH_LOG,
-    async (_event, load_mode) => {
-      if (load_mode === "all") {
+    async (_event, load_mode: LoadModeType) => {
+      if (load_mode === LoadMode.ALL) {
         // auto / manual 각각 원본 배열 조회
-        const auto_logs = await get_full_logs("auto");
-        const manual_logs = await get_full_logs("manual");
+        const auto_logs = await get_full_logs(Mode.AUTO);
+        const manual_logs = await get_full_logs(Mode.MANUAL);
 
         // 원하는 형태로 객체 묶어서 반환
         return {
@@ -59,7 +61,7 @@ export function register_database_handlers() {
       }
 
       // 단일 모드(flatten) 조회는 그대로 유지
-      return await load_search_logs(load_mode);
+      return await load_search_logs(load_mode as Mode);
     }
   );
 }

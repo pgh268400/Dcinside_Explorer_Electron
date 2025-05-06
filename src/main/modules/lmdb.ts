@@ -30,7 +30,18 @@ const manual_db = open({
 // =====================================
 // 📑 타입 정의
 // =====================================
-export type Mode = "auto" | "manual"; // 모드 구분 타입 정의
+export enum Mode {
+  AUTO = "auto", // 자동 저장 모드
+  MANUAL = "manual", // 수동 저장 모드
+}
+
+// IPC 통신에서만 사용되는 로드 모드
+export const LoadMode = {
+  ...Mode,
+  ALL: "all" as const,
+} as const;
+
+export type LoadModeType = (typeof LoadMode)[keyof typeof LoadMode];
 
 export interface ArticleData {
   // 렌더러에서 전달될 게시글 데이터 형태
@@ -69,11 +80,11 @@ export interface LogRecord {
 // =====================================
 function get_db(mode: Mode) {
   // mode에 맞는 DB 인스턴스 반환
-  return mode === "auto" ? auto_db : manual_db;
+  return mode === Mode.AUTO ? auto_db : manual_db;
 }
 function get_key(mode: Mode) {
   // mode에 맞는 키 이름 반환
-  return mode === "auto" ? auto_key : manual_key;
+  return mode === Mode.AUTO ? auto_key : manual_key;
 }
 
 // =====================================
@@ -129,12 +140,12 @@ export async function get_full_logs(mode: Mode): Promise<LogRecord[]> {
 export async function get_all_logs(): Promise<
   Array<{ mode: Mode } & LogRecord>
 > {
-  const auto_logs = (await get_full_logs("auto")).map((l) => ({
-    mode: "auto" as Mode,
+  const auto_logs = (await get_full_logs(Mode.AUTO)).map((l) => ({
+    mode: Mode.AUTO,
     ...l,
   }));
-  const manual_logs = (await get_full_logs("manual")).map((l) => ({
-    mode: "manual" as Mode,
+  const manual_logs = (await get_full_logs(Mode.MANUAL)).map((l) => ({
+    mode: Mode.MANUAL,
     ...l,
   }));
   return [...auto_logs, ...manual_logs] // auto + manual 병합

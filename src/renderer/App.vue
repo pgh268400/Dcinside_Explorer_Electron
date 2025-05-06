@@ -116,7 +116,17 @@ import AboutDialog from "./components/Dialog/About.vue";
 import LoadInterface from "./components/Dialog/LoadInterface.vue";
 import SettingsDialog from "./components/Dialog/Settings.vue";
 import NavigationDrawer from "./components/NavigationDrawer.vue";
-import { Mode } from "../main/modules/lmdb";
+
+// Mode와 LoadMode는 IPC 통신을 통해 가져옵니다
+const Mode = {
+  AUTO: "auto",
+  MANUAL: "manual",
+} as const;
+
+const LoadMode = {
+  ...Mode,
+  ALL: "all" as const,
+} as const;
 
 export default Vue.extend({
   name: "App",
@@ -269,11 +279,14 @@ export default Vue.extend({
       }
     },
 
-    async delete_article(obj: { type: Mode; index: number }) {
+    async delete_article(obj: {
+      type: (typeof Mode)[keyof typeof Mode];
+      index: number;
+    }) {
       try {
         // 삭제할 로그의 ID를 찾기 위해 해당 인덱스의 로그를 가져옴
         const target_log =
-          obj.type === "manual"
+          obj.type === Mode.MANUAL
             ? this.save_data.manual_save[obj.index]
             : this.save_data.auto_save[obj.index];
 
@@ -293,7 +306,7 @@ export default Vue.extend({
           console.log(`[삭제] ${obj.type} 로그 삭제 완료`);
 
           // 메모리에서도 삭제
-          if (obj.type === "manual") {
+          if (obj.type === Mode.MANUAL) {
             this.save_data.manual_save.splice(obj.index, 1);
           } else {
             this.save_data.auto_save.splice(obj.index, 1);
@@ -328,7 +341,7 @@ export default Vue.extend({
 
         const article_data = await ipcRenderer.invoke(
           IPCChannel.DB.LOAD_ARTICLE_SEARCH_LOG,
-          "all"
+          LoadMode.ALL
         );
 
         this.save_data.manual_save = article_data.manual_save;
@@ -353,7 +366,7 @@ export default Vue.extend({
 
         // IPC로 저장 요청할 데이터 형식
         const data = {
-          mode: "manual" as Mode,
+          mode: Mode.MANUAL,
           user_input: {
             search_type: this.select_box.selected_item,
             repeat_cnt: this.repeat_cnt,
@@ -446,7 +459,6 @@ export default Vue.extend({
 
     // 왼쪽 네비게이션 서랍 메뉴 클릭 시 실행되는 함수
     async drawer_item_click(action: DrawerAction) {
-      // console.log(action);
       if (action === DrawerAction.Settings) {
         this.is_open_settings = true;
       } else if (action === DrawerAction.Load) {
@@ -599,7 +611,7 @@ export default Vue.extend({
 
       // IPC로 저장 요청할 데이터 형식
       const data = {
-        mode: "auto" as Mode,
+        mode: Mode.AUTO,
         user_input: {
           search_type: this.select_box.selected_item,
           repeat_cnt: this.repeat_cnt,

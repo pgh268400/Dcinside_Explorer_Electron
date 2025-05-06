@@ -6,7 +6,7 @@
         <v-toolbar density="compact" :color="color" dense>
           <v-toolbar-title>
             <span style="color: white" class="no-drag">
-              {{ type === "자동" ? "AutoSave List" : "ManualSave List" }}
+              {{ type === "auto" ? "AutoSave List" : "ManualSave List" }}
             </span>
           </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -18,7 +18,7 @@
           <v-list-item two-line>
             <v-list-item-content>
               <v-list-item-title class="text-h5">
-                {{ type }} 저장 목록
+                {{ type === "auto" ? "자동" : "수동" }} 저장 목록
               </v-list-item-title>
               <v-list-item-subtitle>저장 목록 확인</v-list-item-subtitle>
             </v-list-item-content>
@@ -109,9 +109,13 @@ import SaveView from "./SaveView.vue";
 import { defineComponent } from "vue";
 import { IPCChannel } from "@/types/ipc";
 import { ipcRenderer } from "electron";
+
 export default defineComponent({
   props: {
-    type: String, // 자동 저장인지 수동 저장인지 구분 ("자동" / "수동")
+    type: {
+      type: String as () => "auto" | "manual",
+      required: true,
+    },
     is_open_dialog: Boolean,
     color: String,
     save_data: {
