@@ -35,7 +35,7 @@ export enum Mode {
   MANUAL = "manual", // 수동 저장 모드
 }
 
-// IPC 통신에서만 사용되는 로드 모드
+// IPC 통신에서만 사용되는 로드 모드, AUTO / MANUAL 외에 ALL 추가
 export const LoadMode = {
   ...Mode,
   ALL: "all" as const,

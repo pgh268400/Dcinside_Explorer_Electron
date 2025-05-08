@@ -57,11 +57,8 @@
 <script lang="ts">
 import { Nullable } from "@/types/default";
 import { SaveArticleData } from "@/types/view";
-import { defineComponent } from "vue";
 import SaveAllList from "./SaveList.vue";
-import { ipcRenderer } from "electron";
 import Vue from "vue";
-import { IPCChannel } from "../../../types/ipc";
 
 // Mode와 LoadMode는 IPC 통신을 통해 가져옵니다
 const Mode = {

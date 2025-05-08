@@ -186,9 +186,7 @@ export default defineComponent({
       } as any);
     },
     delete_article(index: number) {
-      // index 번을 삭제합니다 출력
       // console.log(`${index}번을 삭제합니다.`);
-
       // 삭제 이벤트 상위로 전달
       this.$emit("delete:article", index);
     },
